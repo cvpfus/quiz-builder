@@ -3,7 +3,9 @@ import { createClient } from "@/lib/supabase/api";
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 export default async function handler(req, res) {
@@ -18,7 +20,7 @@ export default async function handler(req, res) {
   const parsed = loginSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.message });
+    return res.status(400).json({ error: parsed.error.issues[0].message });
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({

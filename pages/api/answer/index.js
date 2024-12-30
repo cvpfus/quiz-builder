@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     const parsed = answersSchema.safeParse(answers);
 
     if (!parsed.success) {
-      return res.status(400).json({ error: parsed.error.message });
+      return res.status(400).json({ error: parsed.error.issues[0].message });
     }
 
     const { data, error } = await supabase

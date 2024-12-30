@@ -20,13 +20,19 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
+  const { t } = useTranslation();
+
   const { mutate: register, isPending } = useRegister();
+
+  const router = useRouter();
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -36,9 +42,11 @@ export default function Register() {
       {
         onSuccess: () => {
           toast({
-            title: "Success",
-            description: "Registration successful",
+            title: t("success"),
+            description: t("registerSuccess"),
           });
+
+          router.push("/quiz");
         },
       }
     );
@@ -46,51 +54,51 @@ export default function Register() {
 
   return (
     <form
-      className="flex justify-center items-center h-screen"
+      className="flex justify-center items-center h-screen px-4"
       onSubmit={handleRegister}
     >
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Register</CardTitle>
+          <CardTitle>{t("register")}</CardTitle>
           <CardDescription>
-            <span>Already have an account? </span>
+            <span>{t("registerDescription")} </span>
             <Link href="/login" className="font-bold underline text-black">
-              Login
+              {t("login")}
             </Link>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input
             id="email"
-            placeholder="Email"
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input
             id="password"
-            placeholder="Password"
+            placeholder={t("password")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Label>Role</Label>
+          <Label>{t("role")}</Label>
           <Select value={role} onValueChange={setRole}>
             <SelectTrigger>
-              <SelectValue placeholder="Select Role" />
+              <SelectValue placeholder={t("selectRole")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="creator">Creator</SelectItem>
-              <SelectItem value="user">User</SelectItem>
+              <SelectItem value="user">{t("user")}</SelectItem>
+              <SelectItem value="creator">{t("creator")}</SelectItem>
             </SelectContent>
           </Select>
 
           <Button className="flex gap-2">
             {isPending && <Loader2 className="animate-spin" />}
-            <span>Register</span>
+            <span>{t("register")}</span>
           </Button>
         </CardContent>
       </Card>

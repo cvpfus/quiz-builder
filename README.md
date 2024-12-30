@@ -1,50 +1,60 @@
-## Assignment Overview
+# Quiz Builder
 
-The goal of this assignment is to build a Quiz Builder application using Next.js, Tailwind CSS, and Supabase. The application should demonstrate your ability to work on both the front-end and back-end while handling APIs and showcasing multi-language support.
+A Next.js application for creating and managing quizzes. Build custom quizzes with multiple choice questions.
 
-## Assignment : Quiz Builder
+## Features
 
-### Objective:
+- Create and edit quizzes with multiple choice questions
+- Save drafts and publish when ready
+- View all published quizzes
+- Take quizzes and get the result
+- Responsive design that works on desktop and mobile
 
-Develop a system where users can design quizzes with questions and answers, and allow others to take these quizzes and view their scores. with login and registration should also be included.
+## Tech Stack
 
-### Requirements:
+- Next.js 15 Pages Router
+- React
+- Supabase (PostgreSQL database)
+- TanStack Query
+- Tailwind CSS
+- Shadcn UI Components
 
-1. User Authentication:
+## Prerequisites
 
-   - Implement login and registration using Supabase with email/password authentication.
-   - Handle user session management securely.
-   - Use Next.js API routes for authentication and interacting with Supabase.
+- Node.js 16.x or later
+- npm or yarn package manager
+- Supabase account and project
 
-2. Quiz Creation and Management:
+## Setup
 
-   - Create a page for users to:
-     - Add a quiz title.
-     - Add multiple questions with multiple-choice answers.
-     - Mark the correct answer for each question.
-     - Display a list of quizzes created by the user with options to edit or delete.
-     - Use APIs to interact with Supabase for saving and retrieving quiz data.
-     - Support both English and Arabic languages.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/cvpfus/quiz-builder.git
+   cd quiz-builder
+   ```
 
-3. Taking a Quiz:
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-   - Create a page for users to take quizzes.
-   - Allow users to:
-     - Select a quiz from the list.
-     - Answer quiz questions and submit answers.
-     - View their score along with the correct answers.
-     - Fetch and validate data through Next.js API routes.
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local`
+   - Add your Supabase project URL and anon key:
+     ```
+     NEXT_PUBLIC_SUPABASE_URL=your-project-url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+     ```
 
-4. Front-End Implementation:
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-   - Build a responsive and user-friendly interface using Tailwind CSS.
-   - Add routing for login/register, quiz management, and quiz-taking pages.
-   - Include a language toggle for English and Arabic (be careful with rtl and ltr it is very important!).
+## Database Schema
 
-5. Back-End Implementation:
+The application uses the following main tables in Supabase:
 
-   - Use Next.js API routes for all interactions with Supabase, including:
-     - User authentication.
-     - Quiz creation, retrieval, and management.
-     - Handling quiz submissions and calculating scores.
-   - Ensure proper validation and error handling.
+- `quizzes` - Stores quiz metadata (title, creator, published status)
+- `questions` - Stores questions linked to quizzes
+- `answers` - Stores multiple choice answers for each question

@@ -1,8 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "./use-toast";
+import { useTranslation } from "react-i18next";
 
 export const useUpdateAnswers = () => {
+  const { t } = useTranslation();
+
   return useMutation({
     mutationFn: async ({ answers }) => {
       const response = await axios.patch("/api/answer", { answers });
@@ -15,7 +18,7 @@ export const useUpdateAnswers = () => {
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: t("error"),
         description: error.message,
         variant: "destructive",
       });

@@ -3,7 +3,7 @@ import { useLogout } from "@/hooks/use-logout";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 
-export default function ManageLayout({ children }) {
+export default function ExploreLayout({ children }) {
   const { mutate: logout } = useLogout();
 
   const router = useRouter();
@@ -16,11 +16,11 @@ export default function ManageLayout({ children }) {
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center px-4">
       <Button className="self-end m-4" onClick={handleLogout}>
         {t("logout")}
       </Button>
-      <h1 className="text-2xl font-bold mb-4">{t("quizManagement")}</h1>
+      <h1 className="text-2xl font-bold mb-4">{t("exploreQuizzes")}</h1>
       {children}
     </div>
   );

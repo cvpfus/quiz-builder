@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAddQuiz } from "@/hooks/use-add-quiz";
 import { toast } from "@/hooks/use-toast";
-import { Check, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,9 @@ import equal from "deep-equal";
 import { useDeleteQuestion } from "@/hooks/use-delete-question";
 import { useGetQuiz } from "@/hooks/use-get-quiz";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePublish } from "@/hooks/use-publish";
+import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export const getServerSideProps = async (context) => {
   const { mode } = context.query;
@@ -65,10 +68,13 @@ export default function CreateQuizPage({ id }) {
   const { mutateAsync: updateQuestions } = useUpdateQuestions();
   const { mutateAsync: updateAnswers } = useUpdateAnswers();
   const { mutateAsync: deleteQuestion } = useDeleteQuestion();
+  const { mutateAsync: publishQuiz } = usePublish();
 
   const queryClient = useQueryClient();
 
   const router = useRouter();
+
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     if (quizData) {
@@ -120,7 +126,7 @@ export default function CreateQuizPage({ id }) {
 
         return !equal(
           question,
-          quizData.questions.find((q) => q.id === question.id)
+          quizData?.questions?.find((q) => q.id === question.id)
         );
       })
       .flatMap((q) => q.answers)
@@ -139,6 +145,8 @@ export default function CreateQuizPage({ id }) {
   };
 
   const handleMultipleSave = async ({ isAddQuestion = false } = {}) => {
+    const oldQuestions = structuredClone(questions);
+
     const lastQuestion = questions[questions.length - 1];
 
     let quizId;
@@ -154,8 +162,6 @@ export default function CreateQuizPage({ id }) {
         });
       }
 
-      console.log("lastQuestion", Object.assign({}, lastQuestion));
-
       if (!lastQuestion.id && !!lastQuestion.question) {
         await addQuestion(
           {
@@ -166,6 +172,7 @@ export default function CreateQuizPage({ id }) {
             onSuccess: (data) => {
               setQuestions((questions) => {
                 const newQuestions = [...questions];
+
                 newQuestions[newQuestions.length - 1].id = data.id;
                 newQuestions[newQuestions.length - 1].quiz_id = id;
 
@@ -174,7 +181,7 @@ export default function CreateQuizPage({ id }) {
                     id: a.id,
                     is_correct: a.is_correct,
                     answer:
-                      newQuestions[newQuestions.length - 1].answers[idx].answer,
+                      oldQuestions[oldQuestions.length - 1].answers[idx].answer,
                     question_id: a.question_id,
                   }));
 
@@ -201,8 +208,8 @@ export default function CreateQuizPage({ id }) {
     try {
       if (!title && !id) {
         toast({
-          title: "Error",
-          description: "Title is required",
+          title: t("error"),
+          description: t("titleRequired"),
           variant: "destructive",
         });
         return;
@@ -211,13 +218,12 @@ export default function CreateQuizPage({ id }) {
       await handleMultipleSave();
 
       toast({
-        title: "Success",
-        description: "Draft saved",
+        title: t("success"),
+        description: quizData?.is_published ? t("saved") : t("draftSaved"),
       });
     } catch (error) {
-      console.log("error", error);
       toast({
-        title: "Error",
+        title: t("error"),
         description: error.message,
         variant: "destructive",
       });
@@ -230,8 +236,8 @@ export default function CreateQuizPage({ id }) {
 
       if (!title && !lastQuestion.question && !id) {
         toast({
-          title: "Error",
-          description: "Title and question are required",
+          title: t("error"),
+          description: t("titleQuestionRequired"),
           variant: "destructive",
         });
         return;
@@ -239,8 +245,8 @@ export default function CreateQuizPage({ id }) {
 
       if (title && !lastQuestion.question && !id) {
         toast({
-          title: "Error",
-          description: "Question is required",
+          title: t("error"),
+          description: t("questionRequired"),
           variant: "destructive",
         });
         return;
@@ -248,8 +254,8 @@ export default function CreateQuizPage({ id }) {
 
       if (!title && !!lastQuestion.question && !id) {
         toast({
-          title: "Error",
-          description: "Title is required",
+          title: t("error"),
+          description: t("titleRequired"),
           variant: "destructive",
         });
         return;
@@ -263,10 +269,8 @@ export default function CreateQuizPage({ id }) {
 
       await handleMultipleSave({ isAddQuestion: true });
     } catch (error) {
-      console.log("error", error);
-
       toast({
-        title: "Error",
+        title: t("error"),
         description: error.message,
         variant: "destructive",
       });
@@ -302,8 +306,8 @@ export default function CreateQuizPage({ id }) {
         );
 
         toast({
-          title: "Success",
-          description: "Question deleted",
+          title: t("success"),
+          description: t("questionDeletedSuccess"),
         });
       },
     });
@@ -327,17 +331,64 @@ export default function CreateQuizPage({ id }) {
     );
   };
 
+  const handlePublish = async () => {
+    const isValid = questions.every((question) => {
+      const hasRequiredFields =
+        question.id &&
+        !!question.question &&
+        Array.isArray(question.answers) &&
+        question.answers.length > 0;
+
+      const hasValidAnswers = question.answers.every(
+        (answer) => answer.id && !!answer.answer
+      );
+
+      const hasOneCorrectAnswer =
+        question.answers.filter((answer) => answer.is_correct).length === 1;
+
+      return hasRequiredFields && hasValidAnswers && hasOneCorrectAnswer;
+    });
+
+    if (!isValid) {
+      toast({
+        title: t("error"),
+        description: t("fillAllFields"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    publishQuiz(id, {
+      onSuccess: () => {
+        toast({
+          title: t("success"),
+          description: t("publishSuccess"),
+        });
+      },
+    });
+  };
+
   return (
-    <div className="flex flex-col gap-4 w-full max-w-5xl">
+    <div className="flex flex-col gap-4 w-full max-w-5xl px-4">
+      <Link href="/quiz/manage">
+        <Button onClick={() => queryClient.invalidateQueries(["quiz", id])}>
+          {i18n.language === "ar" ? <ArrowRight /> : <ArrowLeft />}
+          <span>{t("back")}</span>
+        </Button>
+      </Link>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Create new quiz</CardTitle>
+          <CardTitle>
+            {router?.query?.mode?.includes("edit")
+              ? t("editQuiz")
+              : t("createNewQuiz")}
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title">{t("title")}</Label>
           <Input
             id="title"
-            placeholder="Title of the quiz"
+            placeholder={t("titleDescription")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="mb-4"
@@ -347,12 +398,15 @@ export default function CreateQuizPage({ id }) {
             <Card key={i}>
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
-                  <span>Question {i + 1}</span>
+                  <span>
+                    {t("question")} {i + 1}
+                  </span>
                   <Button
-                    variant="ghost"
+                    variant="destructive"
                     size="icon"
                     onClick={() => handleDeleteQuestion(question.id)}
                     disabled={!question.id}
+                    className={`${quizData?.is_published ? "hidden" : ""}`}
                   >
                     <Trash2 />
                   </Button>
@@ -360,19 +414,19 @@ export default function CreateQuizPage({ id }) {
               </CardHeader>
               <CardContent className="flex flex-col gap-2">
                 <Label htmlFor={`question-${i}`} className="italic">
-                  Question
+                  {t("question")}
                 </Label>
                 <Input
                   id={`question-${i}`}
-                  placeholder="Question"
+                  placeholder={t("question")}
                   value={question.question}
                   onChange={(e) => handleChangeQuestion(i, e.target.value)}
                 />
-                <Label className="italic">Answers</Label>
+                <Label className="italic">{t("answers")}</Label>
                 {Array.from({ length: 4 }).map((_, j) => (
                   <div key={`${i}-${j}`} className="flex items-center gap-2">
                     <Input
-                      placeholder={`Answer ${j + 1}`}
+                      placeholder={`${t("answer")} ${j + 1}`}
                       disabled={question.question.length === 0}
                       value={questions[i].answers[j]?.answer || ""}
                       onChange={(e) => handleChangeAnswer(i, j, e.target.value)}
@@ -399,15 +453,25 @@ export default function CreateQuizPage({ id }) {
               </CardContent>
             </Card>
           ))}
-          <Button onClick={handleAddQuestion}>
+          <Button
+            onClick={handleAddQuestion}
+            className={`self-center ${quizData?.is_published ? "hidden" : ""}`}
+          >
             <Plus />
-            <span>Add question</span>
+            <span>{t("addQuestion")}</span>
           </Button>
         </CardContent>
       </Card>
-      <div className="flex justify-end gap-2">
-        <Button onClick={handleSaveDraft}>Save Draft</Button>
-        <Button>Publish</Button>
+      <div className="flex justify-end gap-2 mb-4">
+        <Button onClick={handleSaveDraft}>
+          {quizData?.is_published ? t("save") : t("saveDraft")}
+        </Button>
+        <Button
+          onClick={handlePublish}
+          className={`${quizData?.is_published ? "hidden" : ""}`}
+        >
+          {t("publish")}
+        </Button>
       </div>
     </div>
   );

@@ -1,8 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "./use-toast";
+import { useTranslation } from "react-i18next";
 
 export function useAddQuiz() {
+  const { t } = useTranslation();
+
   return useMutation({
     mutationFn: async ({ title }) => {
       const response = await axios.post("/api/quiz", {
@@ -17,7 +20,7 @@ export function useAddQuiz() {
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: t("error"),
         description: error.message,
         variant: "destructive",
       });

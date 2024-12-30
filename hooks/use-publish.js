@@ -1,20 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "./use-toast";
 import { useTranslation } from "react-i18next";
 
-export const useUpdateQuiz = () => {
+export const usePublish = () => {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: async ({ id, title }) => {
-      const response = await axios.patch(`/api/quiz/${id}`, { id, title });
+    mutationFn: async (id) => {
+      try {
+        const response = await axios.patch(`/api/publish/${id}`);
 
-      if (response.data.error) {
-        throw new Error(response.data.error);
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response.data.error);
       }
-
-      return response.data;
     },
     onError: (error) => {
       toast({

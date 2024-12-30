@@ -3,9 +3,9 @@ import { createClient } from "@/lib/supabase/api";
 export default async function handler(req, res) {
   const supabase = createClient(req, res);
 
-  const { id } = req.query;
-
   if (req.method === "GET") {
+    const { id } = req.query;
+    
     const { data, error } = await supabase
       .from("quizzes")
       .select(`*, questions(*, answers(*))`)
@@ -35,5 +35,21 @@ export default async function handler(req, res) {
     return res.status(200).json(data[0]);
   }
 
-  return res.status(405).appendHeader("Allow", "GET").end();
+  if (req.method === "DELETE") {
+    const { id } = req.query;
+
+    const { error } = await supabase
+      .from("quizzes")
+      .delete()
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ message: "Quiz deleted successfully" });
+  }
+
+  return res.status(405).json({ error: "Method not allowed" });
 }

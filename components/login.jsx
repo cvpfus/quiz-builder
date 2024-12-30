@@ -14,10 +14,13 @@ import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { t } = useTranslation();
 
   const { mutate: login, isPending } = useLogin();
 
@@ -25,14 +28,14 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    
+
     login(
       { email, password },
       {
         onSuccess: () => {
           toast({
-            title: "Success",
-            description: "Login successful",
+            title: t("success"),
+            description: t("loginSuccess"),
           });
 
           router.push("/quiz");
@@ -43,38 +46,38 @@ export default function Login() {
 
   return (
     <form
-      className="flex justify-center items-center h-screen"
+      className="flex justify-center items-center h-screen px-4"
       onSubmit={handleLogin}
     >
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>{t("login")}</CardTitle>
           <CardDescription>
-            <span>Don't have an account? </span>
+            <span>{t("loginDescription")} </span>
             <Link href="/register" className="font-bold underline text-black">
-              Register
+              {t("register")}
             </Link>
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input
             id="email"
-            placeholder="Email"
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input
             id="password"
-            placeholder="Password"
+            placeholder={t("password")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button disabled={isPending} className="flex gap-2">
             {isPending && <Loader2 className="animate-spin" />}
-            <span>Login</span>
+            <span>{t("login")}</span>
           </Button>
         </CardContent>
       </Card>

@@ -3,8 +3,12 @@ import { createClient } from "@/lib/supabase/api";
 
 const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
-  role: z.enum(["creator", "user"]),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+  role: z.enum(["creator", "user"], {
+    message: "Please select a role",
+  }),
 });
 
 export default async function handler(req, res) {
@@ -19,7 +23,7 @@ export default async function handler(req, res) {
   const parsed = registerSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.message });
+    return res.status(400).json({ error: parsed.error.issues[0].message });
   }
 
   const { data, error } = await supabase.auth.signUp({
