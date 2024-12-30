@@ -28,18 +28,19 @@ A Next.js application for creating and managing quizzes. Build custom quizzes wi
 ## Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/cvpfus/quiz-builder.git
    cd quiz-builder
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Set up environment variables:
-   - Copy `.env.example` to `.env.local`
    - Add your Supabase project URL and anon key:
      ```
      NEXT_PUBLIC_SUPABASE_URL=your-project-url
