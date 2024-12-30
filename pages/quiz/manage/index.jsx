@@ -88,7 +88,11 @@ export default function ManagePage({ creatorId }) {
           <CardDescription>{t("yourQuizzesDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <Loader2 className="animate-spin" />
+            </div>
+          )}
 
           {quizzes && quizzes.length === 0 && (
             <p className="text-sm text-center">{t("creatorNoQuizzes")}</p>
