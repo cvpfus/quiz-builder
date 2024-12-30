@@ -1,40 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+## Assignment Overview
 
-## Getting Started
+The goal of this assignment is to build a Quiz Builder application using Next.js, Tailwind CSS, and Supabase. The application should demonstrate your ability to work on both the front-end and back-end while handling APIs and showcasing multi-language support.
 
-First, run the development server:
+## Assignment : Quiz Builder
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Objective:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Develop a system where users can design quizzes with questions and answers, and allow others to take these quizzes and view their scores. with login and registration should also be included.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Requirements:
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+1. User Authentication:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+   - Implement login and registration using Supabase with email/password authentication.
+   - Handle user session management securely.
+   - Use Next.js API routes for authentication and interacting with Supabase.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Quiz Creation and Management:
 
-## Learn More
+   - Create a page for users to:
+     - Add a quiz title.
+     - Add multiple questions with multiple-choice answers.
+     - Mark the correct answer for each question.
+     - Display a list of quizzes created by the user with options to edit or delete.
+     - Use APIs to interact with Supabase for saving and retrieving quiz data.
+     - Support both English and Arabic languages.
 
-To learn more about Next.js, take a look at the following resources:
+3. Taking a Quiz:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+   - Create a page for users to take quizzes.
+   - Allow users to:
+     - Select a quiz from the list.
+     - Answer quiz questions and submit answers.
+     - View their score along with the correct answers.
+     - Fetch and validate data through Next.js API routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Front-End Implementation:
 
-## Deploy on Vercel
+   - Build a responsive and user-friendly interface using Tailwind CSS.
+   - Add routing for login/register, quiz management, and quiz-taking pages.
+   - Include a language toggle for English and Arabic (be careful with rtl and ltr it is very important!).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Back-End Implementation:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+   - Use Next.js API routes for all interactions with Supabase, including:
+     - User authentication.
+     - Quiz creation, retrieval, and management.
+     - Handling quiz submissions and calculating scores.
+   - Ensure proper validation and error handling.
